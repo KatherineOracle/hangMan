@@ -4,7 +4,7 @@ This is the root component of my Hangman App
 
 */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import Drawing from "./components/Drawing";
 import { Component } from "react";
 import Dashboard from "./components/Dashboard";
@@ -13,7 +13,7 @@ import Keyboard from "./components/Keyboard";
 import AppHeader from "./components/AppHeader";
 import HowToPlay from "./components/HowToPlay";
 import "./App.css";
-const dictionaryfile  = require("./dictionary.txt");
+const dictionaryfile = require("./dictionary.txt");
 
 class App extends Component {
   constructor(props) {
@@ -30,7 +30,6 @@ class App extends Component {
     this.dictionary = [];
     this.letterSelectHandler = this.letterSelectHandler.bind(this);
     this.resetButtonHandler = this.resetButtonHandler.bind(this);
-
   }
 
   /* 1) on first load only
@@ -39,15 +38,14 @@ class App extends Component {
   */
   async componentDidMount() {
     try {
-    const response = await fetch(dictionaryfile);
-    const text = await response.text()
-    const dictionaryArr = text.split(/\r?\n/);
-    dictionaryArr.splice(0, 4); // Courtousy to source is in the first four lines of the text file
-    this.dictionary =  [...dictionaryArr];
-    this.setState({loaded: true}, this.reset());
-    
+      const response = await fetch(dictionaryfile);
+      const text = await response.text();
+      const dictionaryArr = text.split(/\r?\n/);
+      dictionaryArr.splice(0, 4); // Courtousy to source is in the first four lines of the text file
+      this.dictionary = [...dictionaryArr];
+      this.setState({ loaded: true }, this.reset());
     } catch (e) {
-      this.setState({error: e, loaded: true});
+      this.setState({ error: e, loaded: true });
     }
   }
 
@@ -57,14 +55,12 @@ class App extends Component {
      This happens on component mount and when the user starts a new game. 
   */
   reset() {
-    
-    const randomNumber = Math.floor(Math.random() * this.dictionary.length); 
+    const randomNumber = Math.floor(Math.random() * this.dictionary.length);
     const winningWord = this.dictionary[randomNumber];
-    
+
     //convert winning word into set of unique letters only and get size
-    const winningLetterSet = new Set([
-      ...winningWord.toLowerCase().split(""),
-    ]).size;
+    const winningLetterSet = new Set([...winningWord.toLowerCase().split("")])
+      .size;
 
     this.setState({
       winningWord: winningWord,
@@ -73,15 +69,14 @@ class App extends Component {
       badChoices: [],
       gameStatus: null,
       loaded: true,
-    });    
-
+    });
   }
 
   /*
      3) When user clicks "Start new game"
      call function above to reset state 
      to default values.
-  */  
+  */
   resetButtonHandler() {
     this.setState(this.reset());
   }
@@ -97,7 +92,7 @@ class App extends Component {
      will equal the winning set length and game status can be set to 'won'
      
      Save updated data back to state
-  */   
+  */
   letterSelectHandler(char) {
     let newGoodChoices = [...this.state.goodChoices];
     let newBadChoices = [...this.state.badChoices];
@@ -138,42 +133,44 @@ class App extends Component {
         <div className="App">
           <AppHeader />
           <main>
-            <Row>
-              <Col xs="auto">
-                <Drawing badChoices={this.state.badChoices} />
-              </Col>
-              <Col>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <div>
-                        <Dashboard
-                          gameStatus={this.state.gameStatus}
-                          totalTries={
-                            this.state.goodChoices.length +
-                            this.state.badChoices.length
-                          }
-                          handleReset={this.resetButtonHandler}
-                        />
-                        <WordPad
-                          winningWord={this.state.winningWord}
-                          gameStatus={this.state.gameStatus}
-                          goodChoices={this.state.goodChoices}
-                        />
-                        <Keyboard
-                          goodChoices={this.state.goodChoices}
-                          gameStatus={this.state.gameStatus}
-                          badChoices={this.state.badChoices}
-                          handleLetterSelect={this.letterSelectHandler}
-                        />
-                      </div>
-                    }
-                  />
-                  <Route path="/howtoplay" element={<HowToPlay />} />
-                </Routes>
-              </Col>
-            </Row>
+            <Container>
+              <Row>
+                <Col xs="auto">
+                  <Drawing badChoices={this.state.badChoices} />
+                </Col>
+                <Col>
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        <div>
+                          <Dashboard
+                            gameStatus={this.state.gameStatus}
+                            totalTries={
+                              this.state.goodChoices.length +
+                              this.state.badChoices.length
+                            }
+                            handleReset={this.resetButtonHandler}
+                          />
+                          <WordPad
+                            winningWord={this.state.winningWord}
+                            gameStatus={this.state.gameStatus}
+                            goodChoices={this.state.goodChoices}
+                          />
+                          <Keyboard
+                            goodChoices={this.state.goodChoices}
+                            gameStatus={this.state.gameStatus}
+                            badChoices={this.state.badChoices}
+                            handleLetterSelect={this.letterSelectHandler}
+                          />
+                        </div>
+                      }
+                    />
+                    <Route path="/howtoplay" element={<HowToPlay />} />
+                  </Routes>
+                </Col>
+              </Row>
+            </Container>
           </main>
           <footer className="App-footer">
             <p className="text-center">
